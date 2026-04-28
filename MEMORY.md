@@ -1,6 +1,6 @@
 # MEMORY.md - 长期记忆
 
-> 最后更新:2026-04-28 bootstrap同步
+> 最后更新:2026-04-28 GitHub备份部署 + 任务SOP更新
 
 ---
 
@@ -302,3 +302,21 @@
 2. `cat gateway.err.log | grep bonjour` — 无新错误 ✅
 3. `cat gateway.log | grep bonjour | grep "14:2"` — 无广播记录 ✅
 4. Gateway 进程稳定（无反复重启）✅
+
+## GitHub 备份仓库（2026-04-28 部署）
+
+**仓库：** `yaojacky2see/openclaw_BackUP`
+**地址：** `https://github.com/yaojacky2see/openclaw_BackUP`
+**本地备份目录：** `/Volumes/Aura_Twins/Github_Store/`
+**Token：** 已配置（`ghp_xxx`，存储于 git remote URL）
+
+**推送规则：**
+- 重要更改后立即 `git push`
+- `openclaw workspace` 为工作目录，同步源
+- `/Volumes/Aura_Twins/Github_Store/` 为镜像备份点
+
+## memory-lancedb-pro 部署记录（2026-04-28）
+
+**状态：** 回退至内置 `memory-lancedb`（SiliconFlow embedding）
+**原因：** `memory-lancedb-pro` npm 包仅 TypeScript 源码，需编译；esbuild 编译后 `stringEnum` 工具注册失败（SDK 版本兼容性问题）
+**后续：** Jacky 会提供其他版本尝试
