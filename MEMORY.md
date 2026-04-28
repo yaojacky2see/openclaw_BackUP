@@ -275,6 +275,10 @@
 
 ## mDNS/Bonjour 广播冲突修复规则（2026-04-28 永久规则）
 
+**trusted_proxies 静默处理（2026-04-28）：**
+- 当前 loopback 模式，暂不配置 trusted_proxies
+- 后期若需暴露 Control UI 通过反向代理，再启用
+
 **问题根因：** 每次 gateway 启动时，bonjour 插件尝试广播 `Jacky's Mac mini (OpenClaw)`，但 Mac mini 本地已有相同名称服务导致冲突，产生 `(2)` / `(3)` 后缀并反复重启 advertiser，最终导致 gateway 反复重启。
 
 **症状识别：**
