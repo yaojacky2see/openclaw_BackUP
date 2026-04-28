@@ -264,9 +264,14 @@
 
 ## Bootstrap 完成（2026-04-28）
 
-**来源:** `/Volumes/Aura_Twins/Aura_OpenClaw/01-身份与记忆/` 外部存储同步
+**来源:** `/Volumes/Aura_Twins/Aura_OpenClaw/01-身份与记忆/` 外部存储同步（一次性，2026-04-28）
 **Workspace:** `/Users/twinaura/.openclaw/workspace/`
 **同步内容:** SOUL.md + IDENTITY.md + USER.md + MEMORY.md
+
+**配置保存规则（2026-04-28 确认）：**
+- OpenClaw 配置**只保存在本地** `/Users/twinaura/.openclaw/`
+- **不**同步到外部存储
+- 外部设备只作为一次性备份源，不再作为同步目标
 
 ## mDNS/Bonjour 广播冲突修复规则（2026-04-28 永久规则）
 
@@ -287,5 +292,3 @@
 2. `cat gateway.err.log | grep bonjour` — 无新错误 ✅
 3. `cat gateway.log | grep bonjour | grep "14:2"` — 无广播记录 ✅
 4. Gateway 进程稳定（无反复重启）✅
-
-**修复后配置同步至：** `/Volumes/Aura_Twins/Aura_OpenClaw/`
