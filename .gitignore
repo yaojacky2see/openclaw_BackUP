@@ -1,0 +1,12 @@
+# OpenClaw runtime data (regenerated automatically)
+.openclaw/
+*.log
+logs/
+
+# OS junk
+.DS_Store
+*.swp
+
+# Temp
+Temp_Pic/
+tmp/

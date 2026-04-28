@@ -46,19 +46,6 @@
 - 回复格式:「确认-删除」或「已读-删除」
 - 新类型邮件单独标注,Jacky 确认后下次自动处理
 
-## Cron 使用原则(2026-04-03 新增)
-
-**能用脚本跑的就不用 cron agent turn**,避免 session cron 膨胀和超时问题。
-
-| 类型 | 推荐方式 | 说明 |
-|------|---------|------|
-| 纯读/检查/告警 | `exec` 脚本 + `cron run` 触发 | 不创建独立 session |
-| 需要 agent 上下文 | `systemEvent` + main session | 必须时才用 |
-| 需隔离不受干扰 | `isolated` agent turn | 单独场景才用 |
-
-session cron 白名单:`Cron: Cron Session 健康监测`
-
-
 ## Jacky 工作指令（铁律）
 - **简报署名规则：** 工作简报必须标注「凌霜的报告」，与凌曦的简报区分（两人执行不同工作）
 - Jacky 说"今天结束了" → 立即触发：
@@ -71,13 +58,7 @@ session cron 白名单:`Cron: Cron Session 健康监测`
 
 - **定稿不动**:已确认的模板/规则/设计,一字不改
 - **Skills整合**:主动识别场景,不是等用户问
-- **cron创建前先查重**:避免重复任务
-- **cron规范**:sessionTarget=isolated / delivery带to:5578873728 / timeout按类型预设
-- **subagent层级**:只向main汇报,不直接面向用户
-- **用脚本前先想第一性原理**:script是最后的手段,不是第一选择
-- **session label不持久**:sessions.json是gateway缓存,重启后被还原,无法手动修改
-
-**任务执行三原则（2026-04-16 新增）**
+- **Skills整合**:主动识别场景,不是等用户问
 
 1. **方案前置确认** — 执行任何新任务前，先输出完整执行方案（方法、技能、步骤），通知 Jacky 确认后才能执行，不做理论可能性判断
 2. **记忆关联保存** — 任务目标拆解后，用最优记忆模式存入 memory/YYYY-MM-DD.md，确保跨任务/跨session的上下文不丢失
@@ -125,22 +106,6 @@ session cron 白名单:`Cron: Cron Session 健康监测`
 - 关键词报告已存:memory/research/2026-03-31-reading-account-keyword-research.md
 - 优先突破词:碎片时间读书、读书笔记怎么写、职场人书单
 - 内容日历4月W1-W4已规划
-
----
-
-## 定时任务(当前8个)
-
-| 时间 | 任务 | 触发方式 |
-|------|------|---------|
-| 06:00–09:00 | 天气简报 | heartbeat |
-| 07:00–09:00 | 邮件简报 | heartbeat |
-| 19:00–21:00 | 邮件简报 | heartbeat |
-| 23:00 | 学习简报 | cron (pending review) |
-| 周日07:00 | 清理存档 | cron |
-
----
-
-*这份文件是我长期记忆的核心,每次重要教训后更新。*
 
 ## Jacky 人格分析（2026-04-11 完成）
 
@@ -265,7 +230,7 @@ session cron 白名单:`Cron: Cron Session 健康监测`
 
 - **远程仓库:** https://github.com/yaojacky2see/openclaw_BackUP.git
 - **备份策略:** 重要文件通过git push自动同步到GitHub
-- **已备份:** skills/ + references/ + scripts/ + memory/ + cron配置
+
 - **WeWrite账号:** 明天(2026-04-02)配置,届时更新备份
 
 
@@ -302,3 +267,25 @@ session cron 白名单:`Cron: Cron Session 健康监测`
 **来源:** `/Volumes/Aura_Twins/Aura_OpenClaw/01-身份与记忆/` 外部存储同步
 **Workspace:** `/Users/twinaura/.openclaw/workspace/`
 **同步内容:** SOUL.md + IDENTITY.md + USER.md + MEMORY.md
+
+## mDNS/Bonjour 广播冲突修复规则（2026-04-28 永久规则）
+
+**问题根因：** 每次 gateway 启动时，bonjour 插件尝试广播 `Jacky's Mac mini (OpenClaw)`，但 Mac mini 本地已有相同名称服务导致冲突，产生 `(2)` / `(3)` 后缀并反复重启 advertiser，最终导致 gateway 反复重启。
+
+**症状识别：**
+- `service stuck in probing/announcing/unannounced for N ms` → 广告卡住
+- `gateway name conflict resolved; newName="Jacky's Mac mini (OpenClaw) (2)"` → 名称冲突
+- `disabling advertiser after 3 failed restarts` → 广告器放弃
+- 多条 bonjour 日志密集出现 → gateway 在不断重试
+
+**修复规则：**
+- 在 `openclaw.json` 中设置 `discovery.mdns.mode="off"` 关闭 mDNS 广播
+- 重启后验证 `gateway.err.log` 中无新的 bonjour 错误
+
+**自检验证项：**
+1. `discovery.mdns.mode="off"` 写入 openclaw.json ✅
+2. `cat gateway.err.log | grep bonjour` — 无新错误 ✅
+3. `cat gateway.log | grep bonjour | grep "14:2"` — 无广播记录 ✅
+4. Gateway 进程稳定（无反复重启）✅
+
+**修复后配置同步至：** `/Volumes/Aura_Twins/Aura_OpenClaw/`
